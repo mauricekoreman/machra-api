@@ -15,5 +15,8 @@ export class Story {
   tile: number;
 
   @Column()
+  punishment: string;
+
+  @Column()
   active: boolean;
 }
