@@ -13,6 +13,11 @@ export class StoriesController {
     return this.storiesService.getStories(filterDto);
   }
 
+  @Get('/:id')
+  getStoryById(@Param('id') id: string): Promise<Story> {
+    return this.storiesService.getStoryById(id);
+  }
+
   @Post()
   createStory(@Body() createstoryDto: CreateStoryDto): Promise<Story> {
     return this.storiesService.createStory(createstoryDto);

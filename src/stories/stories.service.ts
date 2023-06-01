@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Story } from './story.entity';
 import { StoriesRepository } from './stories.repository';
 import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
@@ -8,8 +13,25 @@ import { CreateStoryDto } from './dto/create-story.dto';
 export class StoriesService {
   constructor(private storiesRepository: StoriesRepository) {}
 
-  async getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
+  getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
     return this.storiesRepository.getStories(filterDto);
+  }
+
+  async getStoryById(id: string): Promise<Story> {
+    try {
+      const found = await this.storiesRepository.findOneBy({ id });
+      if (!found) {
+        throw new NotFoundException(`Story with id "${id}" not found.`);
+      }
+
+      return found;
+    } catch (error) {
+      if (error.code === '22P02') {
+        throw new BadRequestException(`Invalid id "${id}"`);
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
   async createStory(createStoryDto: CreateStoryDto): Promise<Story> {

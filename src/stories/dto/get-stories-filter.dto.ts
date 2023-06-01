@@ -1,6 +1,24 @@
+import {
+  IsBooleanString,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+
 export class GetStoriesFilterDto {
-  punishment?: string;
+  @IsOptional()
+  @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  punishment?: string;
+
+  @IsOptional()
+  @IsNumberString()
   tile?: number;
+
+  @IsOptional()
+  @IsBooleanString()
   active?: boolean;
 }

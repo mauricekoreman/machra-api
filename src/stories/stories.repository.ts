@@ -18,14 +18,29 @@ export class StoriesRepository extends Repository<Story> {
   async getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
     const { active, punishment, search, tile } = filterDto;
 
-    const query = this.createQueryBuilder('task');
+    const query = this.createQueryBuilder('story');
 
     if (active) {
-      query.andWhere('task.active = :active', { active });
+      query.andWhere('story.active = :active', { active });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(LOWER(story.title) LIKE LOWER(:search) OR LOWER(story.description) LIKE LOWER(:search))',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (punishment) {
+      query.andWhere('story.punishment = :punishment', { punishment });
+    }
+
+    if (tile) {
+      query.andWhere('story.tile = :tile', { tile });
     }
 
     try {
-      const stories = query.getMany();
+      const stories = await query.getMany();
       return stories;
     } catch (error) {
       this.logger.error(
@@ -39,13 +54,18 @@ export class StoriesRepository extends Repository<Story> {
   async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
     const { active, description, punishment, title, tile } = createStoryDto;
 
+    console.log('active: ', active, typeof active);
+
     const story = this.create({
       title,
       description,
       punishment,
       tile,
-      active,
+      active: Boolean(active),
     });
+
+    console.log(story);
+    console.log(story.active);
 
     try {
       this.save(story);
