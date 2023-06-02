@@ -10,7 +10,7 @@ import { CreateStoryDto } from './dto/create-story.dto';
 
 @Injectable()
 export class StoriesRepository extends Repository<Story> {
-  private logger = new Logger('TasksRepository', { timestamp: true });
+  private logger = new Logger('StoriesRepository', { timestamp: true });
   constructor(private dataSource: DataSource) {
     super(Story, dataSource.createEntityManager());
   }
@@ -44,7 +44,7 @@ export class StoriesRepository extends Repository<Story> {
       return stories;
     } catch (error) {
       this.logger.error(
-        `Failed to get tasks for user. Filters: ${JSON.stringify(filterDto)}`,
+        `Failed to get stories. Filters: ${JSON.stringify(filterDto)}`,
         error.stack,
       );
       throw new InternalServerErrorException();
@@ -54,8 +54,6 @@ export class StoriesRepository extends Repository<Story> {
   async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
     const { active, description, punishment, title, tile } = createStoryDto;
 
-    console.log('active: ', active, typeof active);
-
     const story = this.create({
       title,
       description,
@@ -64,17 +62,12 @@ export class StoriesRepository extends Repository<Story> {
       active: Boolean(active),
     });
 
-    console.log(story);
-    console.log(story.active);
-
     try {
-      this.save(story);
+      await this.save(story);
       return story;
     } catch (error) {
       this.logger.error(
-        `Failed to create story for user. Filters: ${JSON.stringify(
-          createStoryDto,
-        )}`,
+        `Failed to create story. Filters: ${JSON.stringify(createStoryDto)}`,
         error.stack,
       );
       throw new InternalServerErrorException();

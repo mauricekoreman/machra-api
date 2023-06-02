@@ -2,15 +2,18 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Story } from './story.entity';
 import { StoriesRepository } from './stories.repository';
 import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
 import { CreateStoryDto } from './dto/create-story.dto';
+import { UpdateStoryDto } from './dto/update-story.dto';
 
 @Injectable()
 export class StoriesService {
+  private logger = new Logger();
   constructor(private storiesRepository: StoriesRepository) {}
 
   getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
@@ -29,35 +32,34 @@ export class StoriesService {
       if (error.code === '22P02') {
         throw new BadRequestException(`Invalid id "${id}"`);
       } else {
+        this.logger.error(`Failed to get story with id "${id}".`, error.stack);
         throw new InternalServerErrorException();
       }
     }
   }
 
-  async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
+  createStory(createStoryDto: CreateStoryDto): Promise<Story> {
     return this.storiesRepository.createStory(createStoryDto);
   }
 
-  // getStoryById(id: string): Story {
-  //   const found = this.stories.find((story) => story.id === id);
+  async deleteStoryById(id: string): Promise<void> {
+    const result = await this.storiesRepository.delete({ id });
 
-  //   if (!found) {
-  //     throw new NotFoundException(`Task with id "${id}" not found`);
-  //   }
+    if (result.affected === 0) {
+      throw new NotFoundException(`Story with id "${id}" not found.`);
+    }
+  }
 
-  //   return found;
-  // }
+  async updateStoryById(
+    id: string,
+    updateStoryDto: UpdateStoryDto,
+  ): Promise<Story> {
+    const story = await this.getStoryById(id);
 
-  // deleteStory(id: string): void {
-  //   const found = this.getStoryById(id);
-  //   this.stories = this.stories.filter((story) => story.id === found.id);
-  // }
+    Object.assign(story, updateStoryDto);
 
-  // getStoriesWithFilters(filterDto: GetStoriesFilterDto): Task[] {
-  //   const { search, punishment, active, tile } = filterDto;
+    await this.storiesRepository.save(story);
 
-  //   // let stories = this.getStories();
-
-  //   return this.stories;
-  // }
+    return story;
+  }
 }
