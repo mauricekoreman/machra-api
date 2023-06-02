@@ -12,6 +12,6 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
-  role: Role;
+  @Column('character varying', { array: true })
+  roles: Role[];
 }

@@ -15,9 +15,12 @@ import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/auth/role.enum';
 
 @Controller('stories')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard(), RolesGuard)
 export class StoriesController {
   constructor(private storiesService: StoriesService) {}
 
@@ -37,6 +40,7 @@ export class StoriesController {
   }
 
   @Delete('/:id')
+  @Roles(Role.Admin)
   deleteStoryById(@Param('id') id: string): Promise<void> {
     return this.storiesService.deleteStoryById(id);
   }

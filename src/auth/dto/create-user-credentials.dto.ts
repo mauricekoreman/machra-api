@@ -23,6 +23,6 @@ export class CreateUserCredsDto {
   })
   password: string;
 
-  @IsEnum(Role)
-  role: Role;
+  @IsEnum(Role, { each: true })
+  roles: Role[];
 }
