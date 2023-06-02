@@ -1,10 +1,15 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
-export class AdminCredentialsDto {
+export class ChangePasswordDto {
   @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  username: string;
+  @IsNotEmpty()
+  oldPassword: string;
 
   @IsString()
   @MinLength(8)
@@ -13,5 +18,5 @@ export class AdminCredentialsDto {
     message:
       'Password must contain at least: 1 uppercase letter, 1 lowercase letter and 1 number or special character',
   })
-  password: string;
+  newPassword: string;
 }

@@ -1,13 +1,6 @@
-import {
-  IsEnum,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { Role } from '../role.enum';
+import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
-export class CreateUserCredentialsDto {
+export class UserCredentialsDto {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
@@ -21,7 +14,4 @@ export class CreateUserCredentialsDto {
       'Password must contain at least: 1 uppercase letter, 1 lowercase letter and 1 number or special character',
   })
   password: string;
-
-  @IsEnum(Role, { each: true })
-  roles: Role[];
 }

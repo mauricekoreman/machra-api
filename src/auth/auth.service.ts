@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
-import { CreateUserCredsDto } from './dto/create-user-credentials.dto';
 import * as bcrypt from 'bcrypt';
-import { AdminCredentialsDto } from './dto/admin-credentials.dto';
+import { UserCredentialsDto } from './dto/user-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 
@@ -13,17 +12,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // TODO: Guard with admin rights
-  async createUser(
-    createUserCredentialsDto: CreateUserCredsDto,
-  ): Promise<void> {
-    return this.authRepository.createUser(createUserCredentialsDto);
-  }
-
   async signIn(
-    adminCredentialsDto: AdminCredentialsDto,
+    userCredentialsDto: UserCredentialsDto,
   ): Promise<{ accessToken: string }> {
-    const { username, password } = adminCredentialsDto;
+    const { username, password } = userCredentialsDto;
     const user = await this.authRepository.findOneBy({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {

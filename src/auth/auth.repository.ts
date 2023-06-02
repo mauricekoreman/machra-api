@@ -4,11 +4,15 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { User } from './user.entity';
 import { DataSource, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { CreateUserCredsDto } from './dto/create-user-credentials.dto';
+import { CreateUserCredentialsDto } from './dto/create-user-credentials.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { generatePassword } from 'src/utils/generate-password';
 
 @Injectable()
 export class AuthRepository extends Repository<User> {
@@ -18,7 +22,7 @@ export class AuthRepository extends Repository<User> {
   }
 
   async createUser(
-    createUserCredentialsDto: CreateUserCredsDto,
+    createUserCredentialsDto: CreateUserCredentialsDto,
   ): Promise<void> {
     const { username, password, roles } = createUserCredentialsDto;
     const salt = await bcrypt.genSalt();
@@ -38,6 +42,28 @@ export class AuthRepository extends Repository<User> {
         this.logger.error('Failed to create a new user', error.stack);
         throw new InternalServerErrorException();
       }
+    }
+  }
+
+  async changePassword(
+    id: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const { oldPassword, newPassword } = changePasswordDto;
+    const user = await this.findOneBy({ id });
+
+    if (user && (await bcrypt.compare(oldPassword, user.password))) {
+      const hashedPassword = await generatePassword(newPassword);
+
+      const result = await this.update(id, {
+        password: hashedPassword,
+      });
+
+      if (result.affected === 0) {
+        throw new NotFoundException(`User with ID "${id}" not found.`);
+      }
+    } else {
+      throw new UnauthorizedException('Invalid password');
     }
   }
 }
