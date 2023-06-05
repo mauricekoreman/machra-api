@@ -38,3 +38,5 @@ lerna-debug.log*
 .env
 .env.stage.dev
 .env.stage.prod
+
+postgres
