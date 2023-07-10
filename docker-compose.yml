@@ -24,14 +24,3 @@ services:
       - db
     volumes:
       - ./src:/app/src
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    container_name: machrabord-pgadmin4
-    env_file:
-      - ./.env.stage.prod
-    ports:
-      - 5050:80
-    depends_on:
-      - db
