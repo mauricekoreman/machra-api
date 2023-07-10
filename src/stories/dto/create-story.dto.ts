@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateStoryDto {
   @IsNotEmpty()
@@ -16,14 +10,10 @@ export class CreateStoryDto {
   description: string;
 
   @IsNotEmpty()
-  @IsString()
-  punishment: string;
-
-  @IsOptional()
-  @IsNumber()
-  tile?: number;
-
-  @IsNotEmpty()
   @IsBoolean()
   active: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  year_of_story: number;
 }

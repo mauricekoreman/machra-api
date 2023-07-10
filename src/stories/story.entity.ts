@@ -12,11 +12,11 @@ export class Story {
   description: string;
 
   @Column()
-  tile: number;
-
-  @Column()
-  punishment: string;
-
-  @Column()
   active: boolean;
+
+  @Column()
+  year_of_story: number;
+
+  @Column({ type: 'date' })
+  created_at: string;
 }

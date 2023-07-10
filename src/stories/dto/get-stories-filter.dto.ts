@@ -11,14 +11,14 @@ export class GetStoriesFilterDto {
   search?: string;
 
   @IsOptional()
-  @IsString()
-  punishment?: string;
+  @IsBooleanString()
+  active?: boolean;
 
   @IsOptional()
   @IsNumberString()
-  tile?: number;
+  date1?: string;
 
   @IsOptional()
-  @IsBooleanString()
-  active?: boolean;
+  @IsNumberString()
+  date2?: string;
 }

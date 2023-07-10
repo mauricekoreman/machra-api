@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -16,7 +17,7 @@ export class StoriesRepository extends Repository<Story> {
   }
 
   async getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
-    const { active, punishment, search, tile } = filterDto;
+    const { active, search, date1, date2 } = filterDto;
 
     const query = this.createQueryBuilder('story');
 
@@ -31,12 +32,15 @@ export class StoriesRepository extends Repository<Story> {
       );
     }
 
-    if (punishment) {
-      query.andWhere('story.punishment = :punishment', { punishment });
-    }
+    if (date1 || date2) {
+      if (!date1) {
+        throw new BadRequestException('At least date1 needs to be given.');
+      }
 
-    if (tile) {
-      query.andWhere('story.tile = :tile', { tile });
+      query.andWhere('story.year_of_story BETWEEN :date1 AND :date2', {
+        date1,
+        date2: date2 ?? new Date().getFullYear(),
+      });
     }
 
     try {
@@ -52,14 +56,14 @@ export class StoriesRepository extends Repository<Story> {
   }
 
   async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
-    const { active, description, punishment, title, tile } = createStoryDto;
+    const { active, description, title, year_of_story } = createStoryDto;
 
     const story = this.create({
       title,
       description,
-      punishment,
-      tile,
       active: Boolean(active),
+      year_of_story,
+      created_at: new Date().toISOString(),
     });
 
     try {
