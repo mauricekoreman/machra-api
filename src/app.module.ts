@@ -5,9 +5,14 @@ import { configValidationSchema } from './config-schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './auth/admin/admin.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 100,
+    }),
     ConfigModule.forRoot({
       envFilePath: [`.env.stage.${process.env.STAGE}`],
       validationSchema: configValidationSchema,
