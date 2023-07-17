@@ -43,6 +43,8 @@ export class StoriesRepository extends Repository<Story> {
       });
     }
 
+    query.orderBy('story.created_at', 'DESC');
+
     try {
       const stories = await query.getMany();
       return stories;
@@ -59,8 +61,8 @@ export class StoriesRepository extends Repository<Story> {
     const { active, description, title, year_of_story } = createStoryDto;
 
     const story = this.create({
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       active: Boolean(active),
       year_of_story,
       created_at: new Date().toISOString(),

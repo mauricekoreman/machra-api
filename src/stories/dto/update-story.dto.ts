@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateStoryDto {
   @IsOptional()
@@ -14,6 +14,6 @@ export class UpdateStoryDto {
   active?: boolean;
 
   @IsOptional()
-  @IsDateString()
-  date?: string;
+  @IsNumber()
+  year_of_story?: number;
 }

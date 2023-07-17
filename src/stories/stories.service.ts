@@ -56,7 +56,13 @@ export class StoriesService {
   ): Promise<Story> {
     const story = await this.getStoryById(id);
 
-    Object.assign(story, updateStoryDto);
+    const { title, description } = updateStoryDto;
+
+    Object.assign(story, {
+      title: title.trim(),
+      description: description.trim(),
+      ...updateStoryDto,
+    });
 
     await this.storiesRepository.save(story);
 
