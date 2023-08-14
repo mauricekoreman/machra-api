@@ -14,7 +14,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       limit: 100,
     }),
     ConfigModule.forRoot({
-      envFilePath: [`.env.stage.${process.env.STAGE}`],
+      envFilePath: ['.env.stage.dev'],
       validationSchema: configValidationSchema,
     }),
     TypeOrmModule.forRootAsync({

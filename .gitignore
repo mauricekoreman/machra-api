@@ -37,6 +37,5 @@ lerna-debug.log*
 # env variables
 .env
 .env.stage.dev
-.env.stage.prod
 
 postgres

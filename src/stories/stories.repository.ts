@@ -41,6 +41,8 @@ export class StoriesRepository extends Repository<Story> {
         date1,
         date2: date2 ?? new Date().getFullYear(),
       });
+
+      query.orWhere('story.year_of_story = 0');
     }
 
     query.orderBy('story.created_at', 'DESC');

@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: machrabord-api
     env_file:
-      - ./.env.stage.prod
+      - ./.env.stage.dev
     http_port:
       - 3000
     ports:
