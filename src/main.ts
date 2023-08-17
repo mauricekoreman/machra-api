@@ -9,7 +9,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://machrapp.netlify.app'],
+    origin: [process.env.CORS_ORIGIN, 'https://www.machrapp.nl'],
   });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);

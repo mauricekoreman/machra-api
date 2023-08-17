@@ -22,7 +22,7 @@ import { AdminModule } from './admin/admin.module';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
         signOptions: {
-          expiresIn: '8h',
+          expiresIn: '16h',
         },
       }),
     }),
