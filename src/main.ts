@@ -9,11 +9,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: [
-      process.env.CORS_ORIGIN,
-      'https://www.machrapp.nl',
-      'https://machrapp.nl',
-    ],
+    origin: [process.env.CORS_ORIGIN, 'https://machrapp.nl'],
   });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
