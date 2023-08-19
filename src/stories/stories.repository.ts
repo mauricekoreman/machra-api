@@ -17,7 +17,7 @@ export class StoriesRepository extends Repository<Story> {
   }
 
   async getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
-    const { active, search, date1, date2 } = filterDto;
+    const { active, search, date1, date2, limit, offset } = filterDto;
 
     const query = this.createQueryBuilder('story');
 
@@ -43,6 +43,14 @@ export class StoriesRepository extends Repository<Story> {
       });
 
       query.orWhere('story.year_of_story = 0');
+    }
+
+    if (limit) {
+      query.limit(limit);
+
+      if (offset) {
+        query.offset(offset);
+      }
     }
 
     query.orderBy('story.created_at', 'DESC');

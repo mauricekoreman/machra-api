@@ -21,4 +21,12 @@ export class GetStoriesFilterDto {
   @IsOptional()
   @IsNumberString()
   date2?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  limit?: number;
+
+  @IsOptional()
+  @IsNumberString()
+  offset?: number;
 }
