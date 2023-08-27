@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [process.env.CORS_ORIGIN, 'https://machrapp.nl'],
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   await app.listen(3000);
 }
 bootstrap();

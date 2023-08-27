@@ -10,13 +10,14 @@ import { StoriesRepository } from './stories.repository';
 import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
+import { GetStories } from './story.types';
 
 @Injectable()
 export class StoriesService {
   private logger = new Logger();
   constructor(private storiesRepository: StoriesRepository) {}
 
-  getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
+  getStories(filterDto: GetStoriesFilterDto): Promise<GetStories> {
     return this.storiesRepository.getStories(filterDto);
   }
 
