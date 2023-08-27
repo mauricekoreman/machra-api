@@ -4,10 +4,12 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { Story } from './story.entity';
 import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
 import { CreateStoryDto } from './dto/create-story.dto';
+import { getPagination, getPagingData } from './pagination';
+import { GetStories } from './story.types';
 
 @Injectable()
 export class StoriesRepository extends Repository<Story> {
@@ -16,8 +18,16 @@ export class StoriesRepository extends Repository<Story> {
     super(Story, dataSource.createEntityManager());
   }
 
-  async getStories(filterDto: GetStoriesFilterDto): Promise<Story[]> {
-    const { active, search, date1, date2, limit, offset } = filterDto;
+  async getStories(filterDto: GetStoriesFilterDto): Promise<GetStories> {
+    const {
+      active,
+      search,
+      date1,
+      date2,
+      withAlwaysActiveStories,
+      limit: _limit,
+      page,
+    } = filterDto;
 
     const query = this.createQueryBuilder('story');
 
@@ -28,7 +38,7 @@ export class StoriesRepository extends Repository<Story> {
     if (search) {
       query.andWhere(
         '(LOWER(story.title) LIKE LOWER(:search) OR LOWER(story.description) LIKE LOWER(:search))',
-        { search: `%${search}%` },
+        { search: `${search}%` },
       );
     }
 
@@ -37,27 +47,47 @@ export class StoriesRepository extends Repository<Story> {
         throw new BadRequestException('At least date1 needs to be given.');
       }
 
-      query.andWhere('story.year_of_story BETWEEN :date1 AND :date2', {
-        date1,
-        date2: date2 ?? new Date().getFullYear(),
-      });
-
-      query.orWhere('story.year_of_story = 0');
-    }
-
-    if (limit) {
-      query.limit(limit);
-
-      if (offset) {
-        query.offset(offset);
+      if (withAlwaysActiveStories) {
+        query.andWhere(
+          new Brackets((qb) => {
+            qb.where('story.year_of_story BETWEEN :date1 AND :date2', {
+              date1,
+              date2:
+                date2 ??
+                Number(
+                  (new Date().getFullYear() - 1).toString() +
+                    new Date().getFullYear().toString(),
+                ),
+            }).orWhere('story.year_of_story = 0');
+          }),
+        );
+      } else {
+        query.andWhere('story.year_of_story BETWEEN :date1 AND :date2', {
+          date1,
+          date2:
+            date2 ??
+            Number(
+              (new Date().getFullYear() - 1).toString() +
+                new Date().getFullYear().toString(),
+            ),
+        });
       }
     }
+
+    if (!date1 && !date2 && !withAlwaysActiveStories) {
+      query.andWhere('story.year_of_story != 0');
+    }
+
+    const { limit, offset } = getPagination(page, _limit);
+    query.offset(offset);
+    query.limit(limit);
 
     query.orderBy('story.created_at', 'DESC');
 
     try {
-      const stories = await query.getMany();
-      return stories;
+      const stories = await query.getManyAndCount();
+      const response = getPagingData(stories, page, limit);
+      return response as unknown as GetStories;
     } catch (error) {
       this.logger.error(
         `Failed to get stories. Filters: ${JSON.stringify(filterDto)}`,

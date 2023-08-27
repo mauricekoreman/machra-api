@@ -18,6 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/role.enum';
+import { GetStories } from './story.types';
 
 @Controller('stories')
 @UseGuards(AuthGuard(), RolesGuard)
@@ -25,7 +26,7 @@ export class StoriesController {
   constructor(private storiesService: StoriesService) {}
 
   @Get()
-  getStories(@Query() filterDto: GetStoriesFilterDto): Promise<Story[]> {
+  getStories(@Query() filterDto: GetStoriesFilterDto): Promise<GetStories> {
     return this.storiesService.getStories(filterDto);
   }
 
