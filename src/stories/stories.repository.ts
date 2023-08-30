@@ -38,7 +38,7 @@ export class StoriesRepository extends Repository<Story> {
     if (search) {
       query.andWhere(
         '(LOWER(story.title) LIKE LOWER(:search) OR LOWER(story.description) LIKE LOWER(:search))',
-        { search: `${search}%` },
+        { search: `%${search}%` },
       );
     }
 
