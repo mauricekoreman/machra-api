@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateStoryDto {
   @IsNotEmpty()
@@ -8,10 +8,6 @@ export class CreateStoryDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  active: boolean;
 
   @IsNotEmpty()
   @IsNumber()

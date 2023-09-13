@@ -10,10 +10,10 @@ export class UpdateStoryDto {
   description?: string;
 
   @IsOptional()
-  @IsBoolean()
-  active?: boolean;
-
-  @IsOptional()
   @IsNumber()
   year_of_story?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isReviewed?: boolean;
 }

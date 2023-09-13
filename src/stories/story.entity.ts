@@ -17,10 +17,10 @@ export class Story {
   description: string;
 
   @Column()
-  active: boolean;
+  year_of_story: number;
 
   @Column()
-  year_of_story: number;
+  isReviewed: boolean;
 
   @Column({ type: 'date' })
   @CreateDateColumn()
