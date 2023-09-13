@@ -10,6 +10,9 @@ import { GetStoriesFilterDto } from './dto/get-stories-filter.dto';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { getPagination, getPagingData } from './pagination';
 import { GetStories } from './story.types';
+import { User } from 'src/auth/user.entity';
+import { Role } from 'src/auth/role.enum';
+import { GetStoriesFilterManagerDto } from './dto/get-stories-filter-admin.dto';
 
 @Injectable()
 export class StoriesRepository extends Repository<Story> {
@@ -20,7 +23,6 @@ export class StoriesRepository extends Repository<Story> {
 
   async getStories(filterDto: GetStoriesFilterDto): Promise<GetStories> {
     const {
-      active,
       search,
       date1,
       date2,
@@ -31,9 +33,7 @@ export class StoriesRepository extends Repository<Story> {
 
     const query = this.createQueryBuilder('story');
 
-    if (active) {
-      query.andWhere('story.active = :active', { active });
-    }
+    query.where('story.isReviewed = :isReviewed', { isReviewed: true });
 
     if (search) {
       query.andWhere(
@@ -97,14 +97,43 @@ export class StoriesRepository extends Repository<Story> {
     }
   }
 
-  async createStory(createStoryDto: CreateStoryDto): Promise<Story> {
-    const { active, description, title, year_of_story } = createStoryDto;
+  async getStoriesManager(
+    filterDto: GetStoriesFilterManagerDto,
+  ): Promise<Story[]> {
+    const { isReviewed } = filterDto;
+
+    try {
+      if (!isReviewed) {
+        const stories = await this.findBy({ isReviewed: false });
+        return stories;
+      } else {
+        return [] as Story[];
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to get stories. Filters: ${JSON.stringify(filterDto)}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async createStory(
+    createStoryDto: CreateStoryDto,
+    user: User,
+  ): Promise<Story> {
+    const { roles } = user;
+    const shouldNotGetReview = roles.some(
+      (role) => role === Role.Manager || role === Role.Admin,
+    );
+
+    const { description, title, year_of_story } = createStoryDto;
 
     const story = this.create({
       title: title.trim(),
       description: description.trim(),
-      active: Boolean(active),
       year_of_story,
+      isReviewed: shouldNotGetReview,
       created_at: new Date().toISOString(),
     });
 

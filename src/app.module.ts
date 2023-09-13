@@ -23,7 +23,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
+        migrations: ['dist/migrations/*{.ts,.js}'],
+        migrationsRun: true,
         host: configService.get('POSTGRES_HOST'),
         port: configService.get('POSTGRES_PORT'),
         username: configService.get('POSTGRES_USER'),

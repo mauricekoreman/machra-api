@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsBooleanString,
   IsNumberString,
   IsOptional,
   IsString,
@@ -11,10 +10,6 @@ export class GetStoriesFilterDto {
   @IsOptional()
   @IsString()
   search?: string;
-
-  @IsOptional()
-  @IsBooleanString()
-  active?: boolean;
 
   @IsOptional()
   @IsNumberString()
