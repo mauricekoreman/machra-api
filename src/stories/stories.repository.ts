@@ -52,24 +52,14 @@ export class StoriesRepository extends Repository<Story> {
           new Brackets((qb) => {
             qb.where('story.year_of_story BETWEEN :date1 AND :date2', {
               date1,
-              date2:
-                date2 ??
-                Number(
-                  (new Date().getFullYear() - 1).toString() +
-                    new Date().getFullYear().toString(),
-                ),
+              date2: date2 ?? Number(new Date().getFullYear().toString()),
             }).orWhere('story.year_of_story = 0');
           }),
         );
       } else {
         query.andWhere('story.year_of_story BETWEEN :date1 AND :date2', {
           date1,
-          date2:
-            date2 ??
-            Number(
-              (new Date().getFullYear() - 1).toString() +
-                new Date().getFullYear().toString(),
-            ),
+          date2: date2 ?? Number(new Date().getFullYear().toString()),
         });
       }
     }
